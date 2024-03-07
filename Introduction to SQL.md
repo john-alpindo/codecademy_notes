@@ -155,3 +155,63 @@ SELECT name,
     END AS 'Review'
 FROM movies;
 ```
+
+# Aggregate Functions
+## COUNT
+The **COUNT** function returns the number of rows that matches a specified criterion.
+```sql
+SELECT COUNT(*)
+FROM movies;
+```
+## SUM
+The **SUM** function returns the total sum of a numeric column.
+```sql
+SELECT SUM(downloads)
+FROM fake_apps;
+```
+## MAX | MIN
+The **MAX** and **MIN** functions return the highest and lowest values in a selected column.
+```sql
+SELECT MAX(downloads)
+FROM fake_apps;
+```
+## AVG
+The **AVG** function returns the average value of a numeric column.
+```sql
+SELECT AVG(downloads)
+FROM fake_apps;
+```
+## ROUND
+The **ROUND** function rounds a number to a specified number of decimal places.
+```sql
+SELECT ROUND(price, 0)
+FROM fake_apps;
+```
+## GROUP BY
+The **GROUP BY** statement is often used with aggregate functions (COUNT, MAX, MIN, SUM, AVG) to group the result-set by one or more columns.
+```sql
+SELECT category,
+  SUM(downloads)
+FROM fake_apps
+GROUP BY category;
+```
+This query will return the total number of downloads for each category of apps.
+```sql
+SELECT category,
+  price,
+  AVG(downloads)
+FROM fake_apps
+GROUP BY 1, 2;
+```
+This query will return the average number of downloads for each category of apps at each price point. Here, **1** and **2** are used to reference the first and second columns selected in the **SELECT** statement.
+## HAVING
+The **HAVING** clause was added to SQL because the **WHERE** keyword could not be used with aggregate functions.
+```sql
+SELECT price, 
+   ROUND(AVG(downloads)),
+   COUNT(*)
+FROM fake_apps
+GROUP BY price
+HAVING COUNT(*) > 10;
+```
+This query will return the average number of downloads and the count of apps at each price point, but only where the count of apps is greater than 10.
