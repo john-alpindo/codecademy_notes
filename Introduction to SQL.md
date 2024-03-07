@@ -1,42 +1,41 @@
 # Manipulation
 ## CREATE TABLE
 ```sql
-CREATE TABLE customers (
-    id INT PRIMARY KEY,
-    name VARCHAR(50),
-    email VARCHAR(100),
-    address VARCHAR(200)
+CREATE TABLE friends (
+  id INTEGER,
+  name TEXT,
+  birthday DATE
 );
 ```
 ## INSERT
 ```sql
-INSERT INTO customers (id, name, email, address)
-VALUES (2, 'Jane Smith', 'janesmith@example.com', '456 Elm St');
+INSERT INTO friends (id, name, birthday)
+VALUES (1, 'Ororo Munroe', '1940-05-30');
 ```
 ## SELECT
 ```sql
-SELECT * FROM customers;
-```
-## ALTER
-```sql
-ALTER TABLE customers
-ADD COLUMN age INT;
+SELECT * FROM friends;
 ```
 ## UPDATE
 ```sql
-UPDATE customers
-SET age = 25
-WHERE id = 2;
+UPDATE friends
+SET name = 'Storm'
+WHERE id = 1;
+```
+## ALTER
+```sql
+ALTER TABLE friends
+ADD COLUMN email TEXT;
 ```
 ## DELETE
 ```sql
-DELETE FROM customers
-WHERE id = 2;
+DELETE FROM friends
+WHERE id = 1;
 ```
 ## CONSTRAINTS
 ```sql
 CREATE TABLE employees (
-    id INT PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE,
     address VARCHAR(200),
