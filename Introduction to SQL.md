@@ -243,6 +243,22 @@ FROM newspaper
 LEFT JOIN online
   ON newspaper.id = online.id;
 ```
+## Primary Key
+A **PRIMARY KEY** is a unique identifier for each record in a table. It can consist of a single column or multiple columns in combination.
+```sql
+CREATE TABLE table_name (
+  column1 INTEGER PRIMARY KEY,
+  column2 TEXT
+);
+```
+## Foreign Key
+A **FOREIGN KEY** is a field (or collection of fields) in one table that uniquely identifies a row of another table or the same table.
+```sql
+CREATE TABLE table_name (
+  column1 INTEGER PRIMARY KEY,
+  column2 INTEGER FOREIGN KEY REFERENCES other_table(column)
+);
+```
 ## CROSS JOIN
 The **CROSS JOIN** keyword returns the Cartesian product of the two tables.
 ```sql
