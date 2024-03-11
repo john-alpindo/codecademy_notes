@@ -215,3 +215,12 @@ GROUP BY price
 HAVING COUNT(*) > 10;
 ```
 This query will return the average number of downloads and the count of apps at each price point, but only where the count of apps is greater than 10.
+
+## strftime
+The **strftime** function is a powerful tool for querying time and date values. It allows you to extract the date and time from a timestamp, and to format the output. The **strftime** function takes two arguments:
+- The first argument is the [format](https://www.sqlite.org/lang_datefunc.html) of the output.
+- The second argument is the column that contains the timestamp.
+```sql
+SELECT strftime('%Y', timestamp)
+FROM table_name;
+```
