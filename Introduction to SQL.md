@@ -224,3 +224,58 @@ The **strftime** function is a powerful tool for querying time and date values. 
 SELECT strftime('%Y', timestamp)
 FROM table_name;
 ```
+
+# Multiple Tables
+## JOIN | INNER JOIN
+The **JOIN** clause is used to combine rows from two or more tables, based on a related column between them.
+```sql
+SELECT *
+FROM orders
+JOIN subscriptions
+  ON orders.subscription_id = subscriptions.subscription_id;
+```
+The final result has all the columns from both tables but *only the rows* for which there is a match between the columns.
+## LEFT JOIN
+The **LEFT JOIN** keyword returns all records from the left table (table1), and the matched records from the right table (table2). The result is NULL from the right side if there is no match.
+```sql
+SELECT *
+FROM newspaper
+LEFT JOIN online
+  ON newspaper.id = online.id;
+```
+## CROSS JOIN
+The **CROSS JOIN** keyword returns the Cartesian product of the two tables.
+```sql
+SELECT shirts.shirt_color,
+   pants.pants_color
+FROM shirts
+CROSS JOIN pants;
+```
+## UNION
+The **UNION** operator is used to stack the result sets of two or more **SELECT** statements on top of one another.
+```sql
+SELECT *
+FROM table1
+UNION
+SELECT *
+FROM table2;
+```
+SQL has strict rules for appending the result sets together:
+- The number of columns must be the same in all queries.
+- The columns must also have similar data types.
+- The columns in each **SELECT** statement must also be in the same order.
+## WITH
+The **WITH** clause stores the result of a query in a temporary table using an alias. Multiple **WITH** clauses can be defined in a single query.
+```sql
+WITH previous_query AS (
+  SELECT customer_id,
+    COUNT(subscription_id) AS 'subscriptions'
+  FROM orders
+  GROUP BY customer_id
+)
+SELECT customers.customer_name,
+  previous_query.subscriptions
+FROM previous_query
+JOIN customers
+  ON previous_query.customer_id = customers.customer_id;
+```
