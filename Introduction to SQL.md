@@ -267,6 +267,13 @@ SELECT shirts.shirt_color,
 FROM shirts
 CROSS JOIN pants;
 ```
+This query will return a combination of all shirts and pants, regardless of color.
+```sql
+SELECT shirts.shirt_color,
+   pants.pants_color
+FROM shirts, pants;
+```
+This query will return the same result as the previous one.
 ## UNION
 The **UNION** operator is used to stack the result sets of two or more **SELECT** statements on top of one another.
 ```sql
