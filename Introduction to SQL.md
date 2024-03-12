@@ -12,6 +12,17 @@ CREATE TABLE friends (
 INSERT INTO friends (id, name, birthday)
 VALUES (1, 'Ororo Munroe', '1940-05-30');
 ```
+'''sql
+INSERT INTO book
+VALUES (
+  'Postgres for Beginners',
+  '0-5980-6249-1',
+  25,
+  4.99,
+  'Learn Postgres the Easy Way',
+  'Codecademy Publishing'
+);
+```
 ## SELECT
 ```sql
 SELECT * FROM friends;
@@ -302,3 +313,20 @@ FROM previous_query
 JOIN customers
   ON previous_query.customer_id = customers.customer_id;
 ```
+
+# Designing A Database Schema
+## Database Schema
+### Online Database Design Tools
+- [DbDiagram.io](http://dbdiagram.io/) - a free, simple tool to draw ER diagrams by just writing code, designed for developers and data analysts.
+- [SQLDBM](http://sqldbm.com/home) - SQL Database Modeler
+- [DB Designer](http://dbdesigner.net/) - online database schema design and modeling tool
+### Common Data Types
+| Data Type  | Representation                                      | Value      | Display  |
+|------------|-----------------------------------------------------|------------|----------|
+| integer    | whole number                                        | 617        | 617      |
+| decimal    | floating-point number                               | 26.17345   | 26.17345 |
+| money      | fixed floating-point number with 2 decimal places  | 6.17       | $6.17    |
+| boolean    | logic                                               | TRUE, FALSE| t, f     |
+| char(n)    | fixed-length string removes trailing blanks        | '123 '     | '123'    |
+| varchar(n) | variable-length string                              | '123 '     | '123 '   |
+| text       | unlimited-length string                             | '123 '     | '123 '   |
