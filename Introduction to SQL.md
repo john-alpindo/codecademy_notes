@@ -245,6 +245,12 @@ FROM orders
 JOIN subscriptions
   ON orders.subscription_id = subscriptions.subscription_id;
 ```
+```sql
+SELECT book.title AS book,
+  chapter.title AS chapters
+FROM book, chapter
+WHERE book.isbn = chapter.book_isbn;
+```
 The final result has all the columns from both tables but *only the rows* for which there is a match between the columns.
 ## LEFT JOIN
 The **LEFT JOIN** keyword returns all records from the left table (table1), and the matched records from the right table (table2). The result is NULL from the right side if there is no match.
@@ -330,3 +336,59 @@ JOIN customers
 | char(n)    | fixed-length string removes trailing blanks        | '123 '     | '123'    |
 | varchar(n) | variable-length string                              | '123 '     | '123 '   |
 | text       | unlimited-length string                             | '123 '     | '123 '   |
+## Database Keys
+Keys enable you to establish relationships between tables and ensure the uniqueness of data.
+### Primary Key
+A unique identifier for each record in a table. It can consist of a single column or multiple columns in combination.
+```sql
+CREATE TABLE book (
+  title varchar(100),
+  isbn varchar(50) PRIMARY KEY,
+  pages integer,
+  price money,
+  description varchar(256),
+  publisher varchar(100)
+);
+```
+### Key Validation
+#### Information Schema
+The **INFORMATION_SCHEMA** is a meta-database that holds information about your current database. The **INFORMATION_SCHEMA** is the place to look to find information about the structure of your database.
+```sql
+SELECT
+  constraint_name, table_name, column_name
+FROM
+  information_schema.key_column_usage
+WHERE
+  table_name = 'book';
+```
+This query will validate the primary key for the **book** table.
+### Composite Primary Key
+A primary key that consists of multiple columns. This is useful when you want to ensure uniqueness across multiple columns.
+```sql
+CREATE TABLE popular_books (
+  book_title varchar(100),
+  author_name varchar(50),
+  number_sold integer,
+  number_previewed integer,
+  PRIMARY KEY (book_title, author_name)
+);
+```
+### Foreign Key
+A field (or collection of fields) in one table that uniquely identifies a row of another table or the same table.
+```sql
+CREATE TABLE person (
+  id integer PRIMARY KEY,
+  name varchar(20),
+  age integer
+);
+
+CREATE TABLE email (
+  email varchar(20) PRIMARY KEY,
+  person_id integer REFERENCES person(id),
+  storage integer,
+  price money
+);
+```
+**Where should we assign this foreign key?** Is it best suited for the person table or the email table? To address this inquiry, we must examine the relationship between person and email. Is the creation of a person entry contingent upon the existence of an email entry? Typically not. A person might possess zero, one, or multiple email addresses. Therefore, when creating a record in the person table, it's not mandatory for a corresponding record to exist in the email table.
+
+On the other hand, does the creation of an email entry necessitate the presence of a valid person entry? Usually, yes. It's inappropriate to generate an email address for a non-existent person. Consequently, the **foreign key should be placed in the email table**. This ensures that a valid record in the person table must already exist before adding a record to the email table.
