@@ -34,9 +34,14 @@ SET name = 'Storm'
 WHERE id = 1;
 ```
 ## ALTER
+ Altering a table is done when you want to add, delete, or modify columns. The **ALTER TABLE** statement is used to add, delete, or modify columns in an existing table.
 ```sql
 ALTER TABLE friends
 ADD COLUMN email TEXT;
+```
+```sql
+ALTER TABLE chapter
+DROP COLUMN content;
 ```
 ## DELETE
 ```sql
@@ -252,6 +257,17 @@ FROM book, chapter
 WHERE book.isbn = chapter.book_isbn;
 ```
 The final result has all the columns from both tables but *only the rows* for which there is a match between the columns.
+```sql
+SELECT book.title AS book_title,
+  chapter.title AS chapter_title,
+  page.content AS page_content
+FROM book
+JOIN chapter
+  ON book.isbn = chapter.book_isbn
+JOIN page
+  ON chapter.id = page.chapter_id;
+```
+It's considered better practice to use explicit JOIN syntax for better readability and maintainability. Specially when dealing with multiple tables.
 ## LEFT JOIN
 The **LEFT JOIN** keyword returns all records from the left table (table1), and the matched records from the right table (table2). The result is NULL from the right side if there is no match.
 ```sql
@@ -392,3 +408,91 @@ CREATE TABLE email (
 **Where should we assign this foreign key?** Is it best suited for the person table or the email table? To address this inquiry, we must examine the relationship between person and email. Is the creation of a person entry contingent upon the existence of an email entry? Typically not. A person might possess zero, one, or multiple email addresses. Therefore, when creating a record in the person table, it's not mandatory for a corresponding record to exist in the email table.
 
 On the other hand, does the creation of an email entry necessitate the presence of a valid person entry? Usually, yes. It's inappropriate to generate an email address for a non-existent person. Consequently, the **foreign key should be placed in the email table**. This ensures that a valid record in the person table must already exist before adding a record to the email table.
+## Database Relationships
+### One-to-One Relationship
+A one-to-one relationship is created when a record in one table is related to only one record in another table.
+```sql
+CREATE TABLE driver (
+    license_id char(20) PRIMARY KEY,
+    name varchar(20),
+    address varchar(100),
+    date_of_birth date
+);      
+
+CREATE TABLE license (
+    id integer PRIMARY KEY,
+    state_issued varchar(20),
+    date_issued date,
+    date_expired  date,
+    license_id char(20) REFERENCES driver(license_id) UNIQUE
+);
+```
+### One-to-Many Relationship
+A one-to-many relationship is created when a record in one table is related to one or more records in another table.
+```sql
+CREATE TABLE person (
+  id integer PRIMARY KEY,
+  name varchar(20),
+  age integer
+);
+
+CREATE TABLE email (
+  email varchar(20) PRIMARY KEY,
+  person_id integer REFERENCES person(id),
+  storage integer,
+  price money
+);
+```
+### Many-to-Many Relationship
+A many-to-many relationship is created when a record in one table can be related to one or more records in another table and vice versa.
+```sql
+CREATE TABLE student (
+  id integer PRIMARY KEY,
+  name varchar(20),
+  age integer
+);
+
+CREATE TABLE course (
+  id integer PRIMARY KEY,
+  title varchar(20),
+  department varchar(20)
+);
+
+CREATE TABLE student_course (
+  student_id integer REFERENCES student(id),
+  course_id integer REFERENCES course(id),
+  PRIMARY KEY (student_id, course_id)
+);
+```
+- foreign keys referencing the primary keys of the two member tables.
+- a composite primary key made up of the two foreign keys.
+```sql
+SELECT column_one AS alias_one, 
+  column_two AS alias_two
+FROM table_one
+INNER JOIN joined_table
+ON table_one.primary_key = joined_table.foreign_key_one
+INNER JOIN table_two
+ON table_two.primary_key = joined_table.foreign_key_two
+```
+```sql
+SELECT book.title AS book_title,
+  author.name AS author_name,
+  book.description AS book_description
+FROM book
+JOIN books_authors
+  ON book.isbn = books_authors.book_isbn
+JOIN author
+  ON author.email = books_authors.author_email;
+```
+```sql
+SELECT author.name AS author_name,
+  author.email AS author_email,
+  book.title AS book_title
+FROM author
+JOIN books_authors
+  ON author.email = books_authors.author_email
+JOIN book
+  ON book.isbn = books_authors.book_isbn;
+```
+Here's a query to show the relationship between the **author** and **book** tables. The **books_authors** table is used to join the two tables together. The **books_authors** table contains the **isbn** and **email** columns, which are used to join the **book** and **author** tables, respectively.
