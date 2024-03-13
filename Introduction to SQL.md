@@ -469,6 +469,7 @@ CREATE TABLE student_course (
 );
 ```
 #### Implementing a Many-to-Many Relationship
+- create a third table, known as a **cross-reference table**.
 - foreign keys referencing the primary keys of the two member tables.
 - a composite primary key made up of the two foreign keys.
 #### Querying a Many-to-Many Relationship
