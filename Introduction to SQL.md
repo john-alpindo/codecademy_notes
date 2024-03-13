@@ -504,3 +504,118 @@ JOIN book
   ON book.isbn = books_authors.book_isbn;
 ```
 Here's a query to show the relationship between the **author** and **book** tables. The **books_authors** table is used to join the two tables together. The **books_authors** table contains the **isbn** and **email** columns, which are used to join the **book** and **author** tables, respectively.
+
+# Constraints
+Constraints are the rules enforced on data columns on a table. These are used to prevent the database from losing internal and external integrity.
+## PostgreSQL Constraints
+### PostgreSQL Data Types
+| Name         | Description                                                  |
+|--------------|--------------------------------------------------------------|
+| boolean      | true/false                                                   |
+| varchar      | text with variable length, up to n characters (if specified)|
+| date         | calendar date                                                |
+| integer      | whole number value between -2147483648 and +2147483647       |
+| numeric(a, b)| decimal with total digits (a) and digits after the decimal point (b)|
+| time         | time of day (no time zone)                                   |
+- Data types don't prevent you from entering invalid data, but they do restrict the type of data that can be entered. For example, a phone_number column could be set to the varchar data type, but it could still contain non-numeric characters.
+- PostgreSQL will try to interpret the data type based on the value you provide. If you provide a string, it will try to interpret the column as a string. If you provide a number, it will try to interpret the column as a number. For example, if you try to insert 1.5 into a column with the integer data type, PostgreSQL will round the number to 2.
+### Nullability Constraints
+- **NOT NULL** - Ensures that a column cannot have a NULL value.
+```sql
+CREATE TABLE table_name (
+  column_name data_type NOT NULL
+);
+```
+Here's an example of a table with a **NOT NULL** constraint when creating a table.
+### Improving Tables with Constraints
+```sql
+ALTER TABLE table_name
+ALTER COLUMN column_name SET NOT NULL;
+```
+Here's an example of adding a **NOT NULL** constraint to an existing table.
+```sql
+ALTER TABLE table_name
+ALTER COLUMN column_name DROP NOT NULL;
+```
+Here's an example of removing a **NOT NULL** constraint from an existing table.
+However, if there are already NULL values in the column, you will not be able to add a **NOT NULL** constraint until you have updated the column to have no NULL values.
+```sql
+UPDATE table_name
+SET column_name = 'default value'
+WHERE column_name IS NULL;
+```
+```sql
+UPDATE speakers
+SET organization = 'Unaffiliated'
+WHERE organization IS NULL;
+```
+Here's an example of updating a column to have no NULL values.
+### Check Constraints
+In PostgreSQL, the **CHECK** constraint is used to limit the value range that can be placed in a column.
+```sql
+CREATE TABLE table_name (
+  column_name data_type CHECK (condition)
+);
+```
+Here's an example of a table with a **CHECK** constraint when creating a table.
+```sql
+ALTER TABLE table_name
+ADD CHECK (condition);
+```
+```sql
+ALTER TABLE attendees
+ADD CHECK (standard_tickets_reserved + vip_tickets_reserved = total_tickets_reserved);
+```
+Here's an example of adding a **CHECK** constraint to an existing table.
+
+### Unique Constraints
+The **UNIQUE** constraint ensures that all values in a column are different.
+```sql
+CREATE TABLE table_name (
+  column_name data_type UNIQUE
+);
+```
+Here's an example of a table with a **UNIQUE** constraint when creating a table.
+```sql
+CREATE TABLE registrations (
+    id integer NOT NULL,
+    attendee_id integer NOT NULL,
+    session_timeslot timestamp NOT NULL,
+    talk_id integer NOT NULL,
+    UNIQUE (attendee_id, session_timeslot)
+);
+```
+```sql
+ALTER TABLE talks
+ADD UNIQUE (speaker_id, session_timeslot);
+```
+### Primary Key Constraints
+The **PRIMARY KEY** constraint uniquely identifies each record in a table.
+```sql
+ALTER TABLE attendees
+ADD PRIMARY KEY (id);
+```
+### Foreign Key Constraints
+The **FOREIGN KEY** constraint is used to prevent actions that would destroy links between tables.
+```sql
+ALTER TABLE registrations
+ADD FOREIGN KEY (talk_id)
+REFERENCES talks (id);
+```
+Suppose we now want to enter a registration for talk_id = 100, but there is no talk with an id of 100. This would violate the foreign key constraint, and PostgreSQL would not allow the registration to be entered.
+### Foreign Keys - Cascading Changes
+Cause the update or deletes to automatically propagate to any child tables that reference the parent table.
+- **ON DELETE CASCADE** - When a referenced row is deleted, row(s) referencing it are automatically deleted.
+```sql
+ALTER TABLE talks
+ADD FOREIGN KEY (speaker_id)
+REFERENCES speakers (id) ON DELETE CASCADE;
+```
+If a speaker is deleted, all talks associated with that speaker will also be deleted.
+- **ON UPDATE CASCADE** - When a referenced row is updated, row(s) referencing it are automatically updated.
+```sql
+ALTER TABLE speakers
+ADD FOREIGN KEY (organization_id)
+REFERENCES organizations (id) ON UPDATE CASCADE;
+```
+If an organization's id is updated, all speakers associated with that organization will also be updated.
