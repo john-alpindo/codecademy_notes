@@ -74,7 +74,7 @@ SELECT name, email
 FROM employees;
 ```
 ## AS
-This can be especially useful when dealing with more complex queries.
+Alias names can be used to rename a column or table in SQL. An alias only exists for the duration of the query. This can be especially useful when dealing with more complex queries.
 ```sql
 SELECT name AS 'Employee Name',
     email AS 'Email'
@@ -230,7 +230,8 @@ FROM fake_apps
 GROUP BY price
 HAVING COUNT(*) > 10;
 ```
-This query will return the average number of downloads and the count of apps at each price point, but only where the count of apps is greater than 10.
+- This query will return the average number of downloads and the count of apps at each price point, but only where the count of apps is greater than 10.
+- Alias names cannot be used in the **HAVING** clause, so you will have to use the original column name.
 
 ## strftime
 The **strftime** function is a powerful tool for querying time and date values. It allows you to extract the date and time from a timestamp, and to format the output. The **strftime** function takes two arguments:
