@@ -427,6 +427,8 @@ CREATE TABLE license (
     license_id char(20) REFERENCES driver(license_id) UNIQUE
 );
 ```
+#### Implementing a One-to-One Relationship
+- **UNIQUE** constraint on the foreign key in the table.
 ### One-to-Many Relationship
 A one-to-many relationship is created when a record in one table is related to one or more records in another table.
 ```sql
@@ -443,6 +445,8 @@ CREATE TABLE email (
   price money
 );
 ```
+#### Implementing a One-to-Many Relationship
+- a foreign key in the table on the many side of the relationship.
 ### Many-to-Many Relationship
 A many-to-many relationship is created when a record in one table can be related to one or more records in another table and vice versa.
 ```sql
@@ -464,8 +468,10 @@ CREATE TABLE student_course (
   PRIMARY KEY (student_id, course_id)
 );
 ```
+#### Implementing a Many-to-Many Relationship
 - foreign keys referencing the primary keys of the two member tables.
 - a composite primary key made up of the two foreign keys.
+#### Querying a Many-to-Many Relationship
 ```sql
 SELECT column_one AS alias_one, 
   column_two AS alias_two
