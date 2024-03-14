@@ -573,7 +573,8 @@ ADD CHECK (standard_tickets_reserved + vip_tickets_reserved = total_tickets_rese
 Here's an example of adding a **CHECK** constraint to an existing table.
 
 ### Unique Constraints
-The **UNIQUE** constraint ensures that all values in a column are different.
+#### UNIQUE
+Ensures that all values in a column are different.
 ```sql
 CREATE TABLE table_name (
   column_name data_type UNIQUE
@@ -589,10 +590,12 @@ CREATE TABLE registrations (
     UNIQUE (attendee_id, session_timeslot)
 );
 ```
+#### ADD UNIQUE
 ```sql
 ALTER TABLE talks
 ADD UNIQUE (speaker_id, session_timeslot);
 ```
+Here's an example of adding a **UNIQUE** constraint to an existing table.
 ### Primary Key Constraints
 The **PRIMARY KEY** constraint uniquely identifies each record in a table.
 ```sql
