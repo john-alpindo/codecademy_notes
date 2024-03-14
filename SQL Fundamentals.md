@@ -520,7 +520,8 @@ Constraints are the rules enforced on data columns on a table. These are used to
 - Data types don't prevent you from entering invalid data, but they do restrict the type of data that can be entered. For example, a phone_number column could be set to the varchar data type, but it could still contain non-numeric characters.
 - PostgreSQL will try to interpret the data type based on the value you provide. If you provide a string, it will try to interpret the column as a string. If you provide a number, it will try to interpret the column as a number. For example, if you try to insert 1.5 into a column with the integer data type, PostgreSQL will round the number to 2.
 ### Nullability Constraints
-- **NOT NULL** - Ensures that a column cannot have a NULL value.
+#### NOT NULL
+Ensures that a column cannot have a NULL value.
 ```sql
 CREATE TABLE table_name (
   column_name data_type NOT NULL
@@ -528,17 +529,18 @@ CREATE TABLE table_name (
 ```
 Here's an example of a table with a **NOT NULL** constraint when creating a table.
 ### Improving Tables with Constraints
+#### SET NOT NULL
 ```sql
 ALTER TABLE table_name
 ALTER COLUMN column_name SET NOT NULL;
 ```
-Here's an example of adding a **NOT NULL** constraint to an existing table.
+#### DROP NOT NULL
 ```sql
 ALTER TABLE table_name
 ALTER COLUMN column_name DROP NOT NULL;
 ```
-Here's an example of removing a **NOT NULL** constraint from an existing table.
-However, if there are already NULL values in the column, you will not be able to add a **NOT NULL** constraint until you have updated the column to have no NULL values.
+If there are already NULL values in the column, you will not be able to add a **NOT NULL** constraint until you have updated the column to have no NULL values.
+#### Updating Columns to Have No NULL Values
 ```sql
 UPDATE table_name
 SET column_name = 'default value'
@@ -549,8 +551,8 @@ UPDATE speakers
 SET organization = 'Unaffiliated'
 WHERE organization IS NULL;
 ```
-Here's an example of updating a column to have no NULL values.
 ### Check Constraints
+#### CHECK
 In PostgreSQL, the **CHECK** constraint is used to limit the value range that can be placed in a column.
 - Documentation: [PostgreSQL CHECK Constraint](https://www.postgresql.org/docs/16/ddl-constraints.html)
 ```sql
@@ -558,6 +560,7 @@ CREATE TABLE table_name (
   column_name data_type CHECK (condition)
 );
 ```
+#### Adding a Check Constraint
 Here's an example of a table with a **CHECK** constraint when creating a table.
 ```sql
 ALTER TABLE table_name
