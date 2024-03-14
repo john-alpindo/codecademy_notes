@@ -560,7 +560,7 @@ CREATE TABLE table_name (
   column_name data_type CHECK (condition)
 );
 ```
-#### Adding a Check Constraint
+#### ADD CHECK
 Here's an example of a table with a **CHECK** constraint when creating a table.
 ```sql
 ALTER TABLE table_name
