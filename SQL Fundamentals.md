@@ -610,6 +610,11 @@ ADD FOREIGN KEY (talk_id)
 REFERENCES talks (id);
 ```
 Suppose we now want to enter a registration for talk_id = 100, but there is no talk with an id of 100. This would violate the foreign key constraint, and PostgreSQL would not allow the registration to be entered.
+```sql
+ALTER TABLE locations
+ADD FOREIGN KEY (part_id) REFERENCES parts(id);
+```
+Make sure that parts table has a primary key constraint on the id column before adding the foreign key constraint.
 ### Foreign Keys - Cascading Changes
 Cause the update or deletes to automatically propagate to any child tables that reference the parent table.
 - **ON DELETE CASCADE** - When a referenced row is deleted, row(s) referencing it are automatically deleted.
