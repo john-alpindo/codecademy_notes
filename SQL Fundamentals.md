@@ -552,6 +552,7 @@ WHERE organization IS NULL;
 Here's an example of updating a column to have no NULL values.
 ### Check Constraints
 In PostgreSQL, the **CHECK** constraint is used to limit the value range that can be placed in a column.
+- Documentation: [PostgreSQL CHECK Constraint](https://www.postgresql.org/docs/16/ddl-constraints.html)
 ```sql
 CREATE TABLE table_name (
   column_name data_type CHECK (condition)
