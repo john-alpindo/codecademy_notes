@@ -592,10 +592,10 @@ CREATE TABLE registrations (
 ```
 #### ADD UNIQUE
 ```sql
-ALTER TABLE talks
-ADD UNIQUE (speaker_id, session_timeslot);
+ALTER TABLE locations
+ADD UNIQUE (part_id, location);
 ```
-Here's an example of adding a **UNIQUE** constraint to an existing table.
+This requirement is suggesting that **part_id** and **location** together must be unique. This means that you can have multiple rows with the same **part_id** or the same **location**, but you cannot have multiple rows with the same **part_id** and **location** together.
 ### Primary Key Constraints
 The **PRIMARY KEY** constraint uniquely identifies each record in a table.
 ```sql
