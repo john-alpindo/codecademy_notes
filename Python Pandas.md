@@ -63,8 +63,14 @@ print(df[df.MyColumnName == desired_column_value])
 ```
 ## Selecting Rows with Logic II
 ```python
-print(df[(df.MyColumnName == desired_column_value) & (df.MyOtherColumnName == desired_other_column_value)])
+orders[(orders.first_name == 'Frances') & (orders.last_name == 'Palmer')]
+# this will return all the rows where the first name is Frances and the last name is Palmer
+orders[orders.first_name == 'Frances' & orders.last_name == 'Palmer']
+# this will return an error
 ```
+The second example will return an error because the order of operations is not clear.
+
+The first example is the correct way to use logic to select rows.
 You can also use the following logic operators:
 - `==` (equal)
 - `!=` (not equal)
