@@ -97,3 +97,129 @@ Note that the old index is added as a new column, and a new index is used.
 df = df.reset_index(drop=True)
 ```
 This will drop the old index entirely.
+
+# Lambda Functions
+```python
+add_two = lambda my_input: my_input + 2
+
+print(add_two(3))
+print(add_two(100))
+print(add_two(-2))
+```
+This will output:
+```
+5
+102
+0
+``` 
+## Add Random
+```python
+import random
+
+add_random = lambda num: num + random.randint(1,10)
+print(add_random(5))
+print(add_random(100))
+print(add_random(-2))
+```
+`random.randint(a,b)` will return a random integer between a and b (inclusive).
+
+# Modifying DataFrames
+## Adding a Column I
+```python
+df['Quantity'] = [100, 150, 50, 35]
+```
+This will add a new column called 'Quantity' to the DataFrame. The first cell of this column is 100, the second is 150, the third is 50, and the fourth is 35.
+| Product ID | Product Description | Cost to Manufacture | Price | Quantity |
+|------------|---------------------|---------------------|-------|----------|
+| 1          | 3 inch screw        | 0.50                | 0.75  | 100      |
+| 2          | 2 inch nail         | 0.10                | 0.25  | 150      |
+| 3          | hammer              | 3.00                | 5.50  | 50       |
+| 4          | screwdriver         | 2.50                | 3.00  | 35       |
+## Adding a Column II
+```python
+df['In Stock?'] = True
+```
+This will add a new column called 'In Stock?' to the DataFrame. Each cell in this column will be filled with the value True.
+| Product ID | Product Description | Cost to Manufacture | Price | In Stock? |
+|------------|---------------------|---------------------|-------|-----------|
+| 1          | 3 inch screw        | 0.50                | 0.75  | True      |
+| 2          | 2 inch nail         | 0.10                | 0.25  | True      |
+| 3          | hammer              | 3.00                | 5.50  | True      |
+| 4          | screwdriver         | 2.50                | 3.00  | True      |
+## Adding a Column III
+```python
+df['Sales Tax'] = df.Price * 0.075
+```
+This will add a new column called 'Sales Tax' to the DataFrame. Each cell in this column will be filled with the value of 7.5% of the price of the product.
+| Product ID | Product Description | Cost to Manufacture | Price | Sales Tax |
+|------------|---------------------|----------------------|-------|-----------|
+| 1          | 3 inch screw        | 0.50                 | 0.75  | 0.06      |
+| 2          | 2 inch nail         | 0.10                 | 0.25  | 0.02      |
+| 3          | hammer              | 3.00                 | 5.50  | 0.41      |
+| 4          | screwdriver         | 2.50                 | 3.00  | 0.22      |
+## Performing Column Operations
+```python
+df['Name'] = df.Name.apply(str.upper)
+```
+This will create a new column called 'Name' and convert all the names in the 'Name' column to uppercase.
+|   Name     |         Email          |
+|------------|------------------------|
+| JOHN SMITH | john.smith@gmail.com  |
+| JANE DOE   | jdoe@yahoo.com        |
+| JOE SCHMO  | joeschmo@hotmail.com  |
+## Applying a Lambda to a Column
+```python
+df['Email Provider'] = df.Email.apply(
+    lambda x: x.split('@')[-1]
+    )
+```
+This will create a new column called 'Email Provider' and fill it with the email provider present in the email address.
+
+| Name       | Email                    | Email Provider |
+|------------|--------------------------|----------------|
+| JOHN SMITH | john.smith@gmail.com    | gmail.com      |
+| Jane Doe   | jdoe@yahoo.com          | yahoo.com      |
+| joe schmo  | joeschmo@hotmail.com    | hotmail.com    |
+## Applying a Lambda to a Row
+| Item          | Price | Is taxed? |
+|---------------|-------|-----------|
+| Apple         | 1.00  | No        |
+| Milk          | 4.20  | No        |
+| Paper Towels  | 5.00  | Yes       |
+| Light Bulbs   | 3.75  | Yes       |
+
+Suppose we want to add a new column called 'Price with Tax' to the DataFrame. We need to reference two columns to do this, so we'll use the following lambda function:
+```python
+df['Price with Tax'] = df.apply(lambda row:
+     row['Price'] * 1.075
+     if row['Is taxed?'] == 'Yes'
+     else row['Price'],
+     axis=1
+)
+```
+`df.apply()` will take the lambda function and apply it to each row of the DataFrame. The result will be a new DataFrame. Don't forget to specify `axis=1`!
+## Renaming Columns I
+```python
+df = pd.DataFrame({
+    'name': ['John', 'Jane', 'Sue', 'Fred'],
+    'age': [23, 29, 21, 18]
+})
+df.columns = ['First Name', 'Age']
+```
+This will edit existing column names. The columns will be renamed 'First Name' and 'Age'.
+## Renaming Columns II
+```python
+df = pd.DataFrame({
+    'name': ['John', 'Jane', 'Sue', 'Fred'],
+    'age': [23, 29, 21, 18]
+})
+df.rename(columns={
+    'name': 'First Name',
+    'age': 'Age'},
+    inplace=True)
+```
+Here we have to use the `inplace=True` argument to make the change without having to reassign the DataFrame to a new variable.
+
+This is the preferred way to rename columns. It is more explicit and less prone to errors.
+
+**Note:** If you misspell a column name, Pandas will not throw an error. It just won't do anything.
