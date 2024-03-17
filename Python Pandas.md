@@ -223,3 +223,162 @@ Here we have to use the `inplace=True` argument to make the change without havin
 This is the preferred way to rename columns. It is more explicit and less prone to errors.
 
 **Note:** If you misspell a column name, Pandas will not throw an error. It just won't do anything.
+
+# Aggregates in Pandas
+In Pandas, an **aggregate** function is a function where the values of multiple rows are grouped together as input on certain criteria to form a single value of more significant meaning or measurement such as a set, a bag or a list.
+
+## Calculating Column Statistics
+The general syntax for these calculations is:
+```python
+df.column_name.command()
+```
+The following commands are useful for calculating simple statistics:
+
+| Command | Description                           |
+|---------|---------------------------------------|
+| `mean`    | Average of all values in column       |
+| `std`     | Standard deviation                    |
+| `median`  | Median                                |
+| `max`     | Maximum value in column               |
+| `min`     | Minimum value in column               |
+| `count`   | Number of values in column            |
+| `nunique` | Number of unique values in column     |
+| `unique`  | List of unique values in column       |
+
+## Calculating Aggregate Functions I
+The general syntax for these calculations is:
+
+```python
+df.groupby('column1').column2.measurement()
+```
+
+| Student | Assignment Name | Grade |
+| ------- | --------------- | ----- |
+| Amy     | Assignment 1    | 75    |
+| Amy     | Assignment 2    | 35    |
+| Bob     | Assignment 1    | 99    |
+| Bob     | Assignment 2    | 35    |
+| ...     | ...             | ...   |
+
+```python
+grades = df.groupby('Student').Grade.mean()
+```
+This will return a `Series` with the mean of the grades each student got in the column 'Grade'.
+
+| Student | Grade |
+|---------|-------|
+| Amy     | 80    |
+| Bob     | 90    |
+| Chris   | 75    |
+| ...     | ...   |
+
+## Calculating Aggregate Functions II
+### .reset_index()
+The `.groupby()` is powerful in that it allows us to calculate aggregate statistics. However, the result of this calculation is a `Series` object, not a `DataFrame` object. If we want to work with the data as a `DataFrame`, we can use the `reset_index()` method. This will transform our `Series` into a `DataFrame` and move the indices into their own column.
+```python
+df.groupby('column1').column2.measurement().reset_index()
+```
+| id | tea              | category | caffeine | price |
+|----|------------------|----------|----------|-------|
+| 0  | earl grey        | black    | 38       | 3     |
+| 1  | english breakfast| black    | 41       | 3     |
+| 2  | irish breakfast  | black    | 37       | 2.5   |
+| 3  | jasmine          | green    | 23       | 4.5   |
+| 4  | matcha           | green    | 48       | 5     |
+| 5  | camomile         | herbal   | 0        | 3     |
+```python
+teas_counts = teas.groupby('category').id.count().reset_index()
+teas_counts = teas_counts.rename(columns={"id": "counts"})
+```
+| | category | counts |
+|-|----------|--------|
+|0| black    | 3      |
+|1| green    | 2      |
+|2| herbal   | 1      |
+|3| oolong   | 1      |
+|...| ...    | ...    |
+
+## Calculating Aggregate Functions III
+If we want to perform more complex calculations, we can use the `.apply()` method to perform custom calculations. This method will apply a function to the entire group and return a single row per group.
+
+| id    | name          | wage | category |
+|-------|---------------|------|----------|
+| 10131 | Sarah Carney  | 39   | product  |
+| 14189 | Heather Carey | 17   | design   |
+| 15004 | Gary Mercado  | 33   | marketing|
+| 11204 | Cora Copaz    | 27   | design   |
+| ...   | ...           | ...  | ...      |
+
+```python
+# np.percentile can calculate any percentile over an array of values
+high_earners = df.groupby('category').wage
+    .apply(lambda x: np.percentile(x, 75))
+    .reset_index()
+```
+| | category | wage |
+|-|----------|------|
+|0| design   | 23   |
+|1| marketing| 35   |
+|2| product  | 48   |
+|...| ...    | ...  |
+
+## Calculating Aggregate Functions IV
+To group more than one column, we can pass a **list** to the `.groupby()` method. The order of the columns passed as a list matters. The first column in the list will be the level of the new DataFrame's index. 
+
+| Location      | Date      | Day of Week | Total Sales |
+|---------------|-----------|-------------|-------------|
+| West Village  | February 1| W           | 400         |
+| West Village  | February 2| Th          | 450         |
+| Chelsea       | February 1| W           | 375         |
+| Chelsea       | February 2| Th          | 390         |
+
+```python
+df.groupby(['Location', 'Day of Week'])['Total Sales'].mean().reset_index()
+```
+
+| Location      | Day of Week | Total Sales |
+|---------------|-------------|-------------|
+| Chelsea       | M           | 402.50      |
+| Chelsea       | Tu          | 422.75      |
+| Chelsea       | W           | 452.00      |
+| ...           | ...         | ...         |
+| West Village  | M           | 390.00      |
+| West Village  | Tu          | 400.00      |
+| ...           | ...         | ...         |
+
+## Pivot Tables
+The general syntax for a pivot table is:
+```python
+df.pivot(columns='ColumnToPivot',
+         index='ColumnToBeRows',
+         values='ColumnToBeValues')
+```
+
+| Location      | Day of Week | Total Sales |
+|---------------|-------------|-------------|
+| Chelsea       | M           | 300         |
+| Chelsea       | Tu          | 310         |
+| Chelsea       | W           | 375         |
+| Chelsea       | Th          | 390         |
+| ...           | ...         | ...         |
+| West Village  | Th          | 450         |
+| West Village  | F           | 390         |
+| West Village  | Sa          | 250         |
+| ...           | ...         | ...         |
+
+``` python
+# First use the groupby statement:
+unpivoted = df.groupby(['Location', 'Day of Week'])['Total Sales'].mean().reset_index()
+# Now pivot the table
+pivoted = unpivoted.pivot(
+    columns='Day of Week',
+    index='Location',
+    values='Total Sales').reset_index()
+```
+**Note:** The `.reset_index()` method is used to move the indices into their own column.
+
+| Location      | M   | Tu  | W   | Th  | F   | Sa  | Su  |
+|---------------|-----|-----|-----|-----|-----|-----|-----|
+| Chelsea       | 300 | 310 | 375 | 390 | 300 | 150 | 175 |
+| West Village  | 300 | 310 | 400 | 450 | 390 | 250 | 200 |
+| ...           | ... | ... | ... | ... | ... | ... | ... |
