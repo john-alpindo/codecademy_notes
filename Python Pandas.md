@@ -246,6 +246,9 @@ The following commands are useful for calculating simple statistics:
 | `unique`  | List of unique values in column       |
 
 ## Calculating Aggregate Functions I
+Here's the [documentation](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.groupby.html) for the `groupby` method.
+
+```python
 The general syntax for these calculations is:
 
 ```python
