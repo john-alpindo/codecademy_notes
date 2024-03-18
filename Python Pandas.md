@@ -385,3 +385,137 @@ pivoted = unpivoted.pivot(
 | Chelsea       | 300 | 310 | 375 | 390 | 300 | 150 | 175 |
 | West Village  | 300 | 310 | 400 | 450 | 390 | 250 | 200 |
 | ...           | ... | ... | ... | ... | ... | ... | ... |
+
+# Multiple DataFrames
+## Inner Merge I
+
+|  *month*   | revenue |
+|----------|---------|
+| January  |   300   |
+| February |   290   |
+| March    |   310   |
+|    ...   |   ...   |
+
+|   *month*   | target |
+|-----------|--------|
+| January   |  310   |
+| February  |  270   |
+| March     |  300   |
+|    ...    |  ...   |
+
+```python
+new_df = pd.merge(sales, targets)
+```
+`pd.merge()` will merge the two DataFrames on the **columns that are the same** between the two DataFrames.
+
+|   *month*   | revenue | target |
+|-----------|---------|--------|
+| January   |   300   |  310   |
+| February  |   290   |  270   |
+| March     |   310   |  300   |
+|    ...    |   ...   |  ...   |
+
+## Inner Merge II
+`.merge()` can also be used to merge on multiple columns.
+```python
+new_df = sales.merge(targets)
+```
+This is generally used to chain `.merge()` methods to join multiple DataFrames together.
+```python
+new_df = sales.merge(targets).merge(employees)
+```
+
+## Merge on Specific Columns I
+`.rename()` to rename the columns of a DataFrame. This is useful if we want to merge two DataFrames with different column names.
+```python
+pd.merge(
+    orders,
+    customers.rename(columns={'id': 'customer_id'}))
+```
+
+## Merge on Specific Columns II
+`left_on` and `right_on` can also be used to merge DataFrames with different column names.
+```python
+pd.merge(
+    orders,
+    customers,
+    left_on='customer_id',
+    right_on='id')
+```
+After the merge, the same column will appear twice, once for each DataFrame. With the `suffixes` parameter, we can specify the names of the columns in the case of a conflict.
+```python
+pd.merge(
+    orders,
+    customers,
+    left_on='customer_id',
+    right_on='id',
+    suffixes=['_order', '_customer']
+)
+```
+## Mismatched Merges
+If we try to merge two DataFrames with columns that don't match, the merge will still be successful. The row with the mismatched row will be removed from the final DataFrame. Just like `INNER JOIN` in SQL.
+
+## Outer Merge
+`how='outer'` parameter can be used to combine data from two DataFrames without losing data. The default is `how='inner'`.
+
+`company_a`
+
+| Name         | Email                 |
+|--------------|-----------------------|
+| Sally Sparrow| sally.sparrow@gmail.com |
+| Peter Grant  | pgrant@yahoo.com      |
+| Leslie May   | leslie_may@gmail.com |
+
+`company_b`
+
+| Name        | Phone        |
+|-------------|--------------|
+| Peter Grant | 212-345-6789 |
+| Leslie May  | 626-987-6543 |
+| Aaron Burr  | 303-456-7891 |
+
+```python
+pd.merge(company_a, company_b, how='outer')
+```
+| Name          | Email                    | Phone       |
+|---------------|--------------------------|-------------|
+| Sally Sparrow | sally.sparrow@gmail.com | `nan`         |
+| Peter Grant   | pgrant@yahoo.com         | 212-345-6789|
+| Leslie May    | leslie_may@gmail.com     | 626-987-6543|
+| Aaron Burr    | `nan`                      | 303-456-7891|
+
+## Left Merge
+`how='left'` parameter can be used to combine data from two DataFrames without losing data from the left DataFrame.
+
+```python
+pd.merge(company_a, company_b, how='left')
+```
+| Name         | Email                  | Phone       |
+|--------------|------------------------|-------------|
+| Sally Sparrow| sally.sparrow@gmail.com| `None`        |
+| Peter Grant  | pgrant@yahoo.com       | 212-345-6789|
+| Leslie May   | leslie_may@gmail.com   | 626-987-6543|
+
+## Right Merge
+`how='right'` parameter can be used to combine data from two DataFrames without losing data from the right DataFrame.
+
+```python
+pd.merge(company_a, company_b, how='right')
+```
+| Name        | Email               | Phone       |
+|-------------|---------------------|-------------|
+| Peter Grant | pgrant@yahoo.com   | 212-345-6789|
+| Leslie May  | leslie_may@gmail.com | 626-987-6543 |
+| Aaron Burr  | `None`                | 303-456-7891|
+
+**NOTE:** The order of the DataFrames passed to `.merge()` changes the output of the final DataFrame.
+
+## Concatenate DataFrames
+`pd.concat()` can be used to concatenate two or more DataFrames into a single DataFrame. This works the same way as `UNION` in SQL.
+
+This is useful when we have a dataset that is split into multiple files. For example, if we have a dataset that is split by date, with each day's data stored in a separate CSV (e.g., `file_1.csv`, `file_2.csv`), we can use `pd.concat()` to concatenate all the data into a single DataFrame.
+
+```python
+pd.concat([df1, df2, df3])
+```
+**NOTE:** This will only work if the DataFrames have the same columns.
