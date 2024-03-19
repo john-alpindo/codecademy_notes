@@ -91,7 +91,7 @@ SELECT username,
       ORDER BY posts
       RANGE BETWEEN UNBOUNDED PRECEDING AND
       UNBOUNDED FOLLOWING
-   ) AS 'fewest_posts'
+   ) AS 'most_posts'
 FROM social_media;
 ```
 | username      | posts | fewest_posts |
@@ -215,3 +215,119 @@ SELECT
 FROM
    streams;
 ```
+
+# Math and Date Functions
+
+## Math Operators
+- `+` Addition
+- `-` Subtraction
+- `*` Multiplication
+- `/` Division
+- `%` Modulo (returns the remainder of a division)
+
+```sql
+SELECT (1 + 5);  -- 6
+SELECT (10 - 6); -- 4
+SELECT (4 / 2);  -- 2
+SELECT (15 * 3); -- 45
+SELECT (10 % 3); -- 1
+
+SELECT (price * quantity) AS total_cost
+FROM bakery;
+```
+## ABS
+The `ABS` function returns the absolute value of a number. The absolute value of a number is its distance from zero, so it is always positive.
+
+```sql
+SELECT ABS(-3); -- 3
+SELECT ABS(5);  -- 5
+SELECT ABS(0);  -- 0
+
+SELECT first_name, ABS(804 - guess)
+FROM guesses;
+```
+## CAST
+The `CAST` function is used to convert a value from one data type to another. This is useful for converting between numeric data types, converting between date and time data types, and other type conversions.
+
+```sql
+SELECT CAST(expression AS new_data_type);
+```
+```sql
+SELECT 3 / 2; -- 1
+SELECT CAST(3 AS REAL) / 2; -- 1.5
+
+SELECT CAST('3.14 is pi' AS REAL); -- 3.14
+```
+## Date and Time Functions I
+In SQL date are written in one of the following formats:
+- Date: `YYYY-MM-DD`
+- Datetime or Timestamp: `YYYY-MM-DD HH:MM:SS`
+
+### DATETIME()
+Returns the date and time of the current system.
+```sql
+SELECT DATETIME('now');
+SELECT DATETIME('now', 'localtime');
+```
+### DATE()
+Returns the date of the current system.
+```sql
+SELECT DATE('2020-09-01 17:38:22'); -- 2020-09-01
+```
+### TIME()
+Returns the time of the current system.
+```sql
+SELECT TIME('2020-09-01 17:38:22'); -- 17:38:22
+```
+## Date and Time Functions II
+We can provide additional arguments to the date and time functions to perform calculations and transformations.
+```sql
+DATETIME(timestring, modifier1, modifier2, ...)
+```
+- `start of year`: transforms the date to the first day of the year.
+- `start of month`: transforms the date to the first day of the month.
+- `start of day`: transforms the date to the first second of the day.
+```sql
+SELECT DATE('2005-09-15', 'start of month'); -- 2005-09-01
+```
+- `+-N years`: adds or subtracts N years from the date.
+- `+-N months`: adds or subtracts N months from the date.
+- `+-N days`: adds or subtracts N days from the date.
+- `+-N hours`: adds or subtracts N hours from the date.
+- `+-N minutes`: adds or subtracts N minutes from the date.
+- `+-N seconds`: adds or subtracts N seconds from the date.
+```sql
+SELECT DATETIME('2020-02-10', 
+   'start of month', 
+   '-1 day', 
+   '+7 hours'); -- 2020-01-31 07:00:00
+```
+## Date and Time Functions III
+### STRFTIME()
+Returns a string representation of the date and time according to a format string. It is useful for formatting dates and times for display or for use in other functions.
+```sql
+STRFTIME(format, timestring, modifier1, modifier2, ...)
+```
+The format string can include the following placeholders:
+- `%Y`: returns the year (YYYY).
+- `%m`: returns the month (01-12).
+- `%d`: returns the day of the month (01-31).
+- `%H`: returns the hour (00-23).
+- `%M`: returns the minute (00-59).
+- `%S`: returns the second (00-59).
+- `%w`: returns the day of the week (0-6, Sunday is 0).
+- `%j`: returns the day of the year (001-366).
+```sql
+SELECT STRFTIME('%d', order_date) AS order_day,
+  COUNT(*) AS count
+FROM bakery
+GROUP BY 1
+ORDER BY 2 DESC;
+```
+| order_day | count |
+|-----------|-------|
+| 16        | 9     |
+| 20        | 6     |
+| 18        | 6     |
+| 17        | 5     |
+| ---       | ---   |
