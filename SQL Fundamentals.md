@@ -171,7 +171,16 @@ SELECT name,
     END AS 'Review'
 FROM movies;
 ```
-
+```sql
+SELECT modal_text,
+  COUNT(DISTINCT CASE
+    WHEN ab_group = 'control' THEN user_id
+    END) AS 'control_clicks'
+FROM onboarding_modals
+GROUP BY 1
+ORDER BY 1;
+```
+Here, the **CASE** statement is used as an argument for the **COUNT** function to count the number of distinct **user_id** values where **ab_group** is equal to **'control'**.
 # Aggregate Functions
 ## COUNT
 The **COUNT** function returns the number of rows that matches a specified criterion.
