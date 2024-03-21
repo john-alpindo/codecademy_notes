@@ -244,7 +244,7 @@ The regex `The monkey ate a (rotten )?banana` will match both `The monkey ate a 
 ## Quantifiers - Zero or More `*`
 The `*` character is used to match the preceding character 0 or more times. For example, the regular expression `go*gle` will match `ggle`, `gogle`, `google`, `gooogle`, etc.
 
-## QUantifiers - One or More `+`
+## Quantifiers - One or More `+`
 The `+` character is used to match the preceding character 1 or more times. For example, the regular expression `go+gle` will match `gogle`, `google`, `gooogle`, etc.
 
 ## Anchors `^` and `$`
