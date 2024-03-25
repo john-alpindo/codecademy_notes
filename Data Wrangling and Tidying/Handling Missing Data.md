@@ -244,3 +244,134 @@ time                      | space_id | comfort
 2021-03-18 14:22:00+08:00|     2    | Comfy
 2021-03-18 15:24:00+08:00|     2    | Comfy
 2021-03-18 15:59:00+08:00|     2    | Comfy
+
+### Other alternatives
+#### BOCF
+One such alternative is BOCF, which stands for Best Observation Carried Forward. This method is used the initial values to fill the missing values. 
+
+For example, In this data, we are trying to study some measure of bacteria in a patient’s body after the patient receives a certain treatment.
+
+| timestamp           | concentration |
+|---------------------|---------------|
+| 2021-09-01 08:00:00 | 100           |
+| 2021-09-01 08:15:00 | 98            |
+| 2021-09-01 08:30:00 | 97            |
+| 2021-09-01 08:45:00 | 98            |
+| 2021-09-01 09:00:00 | N/A           |
+| 2021-09-01 09:15:00 | 96            |
+| 2021-09-01 09:30:00 | 94            |
+| 2021-09-01 09:45:00 | 93            |
+| 2021-09-01 10:00:00 | 90            |
+
+```python
+# Isolate the first (baseline) value for our data
+baseline = df['concentration'][0]
+
+# Fill the missing values with the baseline value
+df['concentration'].fillna(baseline, inplace=True)
+```
+#### WOCF
+WOCF stands for Worst Observation Carried Forward. This method is used when the missing values are assumed to be the same as the worst observed value.
+
+In this data, we are trying to study the pain level of a patient over the course of a therapy. We can assume that the pain level at 2021-09-05 is the same as the worst observed pain level.
+
+| date       | pain |
+|------------|------|
+| 2021-09-01 | 8    |
+| 2021-09-02 | 8    |
+| 2021-09-03 | 9    |
+| 2021-09-04 | 7    |
+| 2021-09-05 | N/A  |
+| 2021-09-06 | 6    |
+| 2021-09-07 | 7    |
+| 2021-09-08 | 5    |
+| 2021-09-09 | 5    |
+
+This is a great use case for WOCF. Since we are tracking a patient's pain level, with the goal of reducing it, we can assume that the pain level at 2021-09-05 is the same as the worst observed pain level, as this would be the most conservative approach.
+
+```python
+# Isolate the worst observed value for our data
+worst_observed = df['pain'].max()
+
+# replace the missing values with the worst observed value
+df['pain'].fillna(value=worst_observed, inplace=True)
+```
+### What are the disadvantages of single imputation?
+Single imputation methods are simple and easy to implement, but they have some disadvantages:
+
+- Single imputation methods do not account for the uncertainty in the imputed values. The imputed values are treated as if they are known with certainty, which can lead to biased estimates and incorrect inferences.
+
+- Single imputation methods can introduce bias into the data.
+
+In general, single imputation can be an effective way to handle missing data, but it is important to be aware of the limitations and potential pitfalls of these methods.
+
+# Multiple Imputation
+Multiple imputation is a method of imputation where the missing values are replaced by multiple values. Multiple imputation, in particular, is used when we have missing data across multiple variables. After imputing the missing values multiple times, we can us an algorithm to combine the results into a single imputed dataset.
+
+## When to use multiple imputation?
+Multiple imputation is best for MAR data. With MAR data, there is an assumed relationship between the missing data and the observed data. Multiple imputation can help to preserve this relationship and reduce bias in the imputed data.
+
+## How to use it
+### InterativeImputer in scikit-learn
+The `IterativeImputer` class in scikit-learn is a powerful tool for imputing missing values in a dataset. It uses a machine learning model to predict the missing values based on the observed data. The `IterativeImputer` class is flexible and can be used with a variety of machine learning models, such as linear regression, random forests, and support vector machines.
+
+| X    | Y    | Z    |
+|------|------|------|
+| 5.4  | 18.0 | 7.6  |
+| 13.8 | 27.4 | 4.6  |
+| 14.7 |      | 4.2  |
+| 17.6 | 18.3 |      |
+|      | 49.6 | 4.7  |
+| 1.1  | 48.9 | 8.5  |
+| 12.9 |      | 3.5  |
+| 3.4  | 13.6 |      |
+|      | 16.1 | 1.8  |
+| 10.2 | 42.7 | 4.7  |
+
+```python
+import numpy as np
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+import pandas as pd
+
+# Create the dataset as a Python dictionary
+d = {
+    'X': [5.4,13.8,14.7,17.6,np.nan,1.1,12.9,3.4,np.nan,10.2],
+    'Y': [18,27.4,np.nan,18.3,49.6,48.9,np.nan,13.6,16.1,42.7],
+    'Z': [7.6,4.6,4.2,np.nan,4.7,8.5,3.5,np.nan,1.8,4.7]
+}
+
+dTest = {
+    'X': [13.1, 10.8, np.nan, 9.7, 11.2],
+    'Y': [18.3, np.nan, 14.1, 19.8, 17.5],
+    'Z': [4.2, 3.1, 5.7,np.nan, 9.6]
+}
+
+# Create the pandas DataFrame from our dictionary
+df = pd.DataFrame(data=d)
+dfTest = pd.DataFrame(data=dTest)
+
+# Create the IterativeImputer model to predict missing values
+imp = IterativeImputer(max_iter=10, random_state=0)
+
+# Fit the model to the test dataset
+imp.fit(dfTest)
+
+# Transform the model on the entire dataset
+dfComplete = pd.DataFrame(np.round(imp.transform(df),1), columns=['X','Y','Z'])
+
+print(dfComplete.head(10))
+```
+
+| X    | Y    | Z   |
+|------|------|-----|
+| 5.4  | 18.0 | 7.6 |
+| 13.8 | 27.4 | 4.6 |
+| 14.7 | **17.4** | 4.2 |
+| 17.6 | 18.3 | **5.6** |
+| **11.2** | 49.6 | 4.7 |
+| 1.1  | 48.9 | 8.5 |
+| 12.9 | **17.4** | 3.5 |
+| 3.4  | 13.6 | **5.7** |
+| **11.2** | 16.1 | 1.8 |
+| 10.2 | 42.7 | 4.7 |
