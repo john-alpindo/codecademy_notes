@@ -159,3 +159,88 @@ We could also choose to exclude a variable altogether if it lacks sufficient dat
 ```python
 data.drop('Weight (kg)', axis=1, inplace=True)
 ```
+# Single Imputation
+Imputation is the process of replacing missing values with substituted values. Single imputation is a method of imputation where the missing values are replaced by a single value. There are different methods of single imputation such as mean imputation, median imputation, mode imputation, and LOCF imputation.
+
+## What is time-series data?
+The data that is collected at different points in time is called time-series data. It is a sequence of observations that are recorded at regular time intervals. Time-series data is used to analyze the past data and forecast the future data.
+
+## What can we do on MNR data?
+
+### LOCF
+LOCF stands for Last Observation Carried Forward. It is a method of imputation where the last observation is carried forward to the missing values. This method is used when the missing values are assumed to be the same as the last observed value.
+
+| time                      | space_id | comfort   |
+|---------------------------|----------|-----------|
+| 2021-03-16 08:22:00+08:00 | 125      | Comfy     |
+| 2021-03-16 09:37:00+08:00 | 125      | Not Comfy |
+| 2021-03-18 08:11:00+08:00 | 125      | Not Comfy |
+| 2021-03-18 09:48:00+08:00 | 125      | Comfy     |
+| 2021-03-18 13:35:00+08:00 | 125      | Comfy     |
+| 2021-03-18 15:23:00+08:00 | 125      | Comfy     |
+| 2021-03-18 15:53:00+08:00 | 125      |           |
+| 2021-03-18 18:58:00+08:00 | 125      | Comfy     |
+| 2021-03-19 08:05:00+08:00 | 125      | Not Comfy |
+| 2021-03-19 09:53:00+08:00 | 125      | Comfy     |
+
+We can assume that the comfort level at 2021-03-18 15:53:00+08:00 is the same as the comfort level at 2021-03-18 15:23:00+08:00. This is because the last observed comfort level is Comfy.
+
+- In `Pandas`, we can use the `ffill` method to carry forward the last observation to the missing values.
+```python
+df['comfort'].ffill(axis=0, inplace=True)
+```
+- In `NumPy`, we can use the `impyute` library to carry forward the last observation to the missing values.
+```python
+impyute.imputation.ts.locf(data, axis=0)
+```
+| time                      | space_id | comfort   |
+|---------------------------|----------|-----------|
+| 2021-03-16 08:22:00+08:00 | 125      | Comfy     |
+| 2021-03-16 09:37:00+08:00 | 125      | Not Comfy |
+| 2021-03-18 08:11:00+08:00 | 125      | Not Comfy |
+| 2021-03-18 09:48:00+08:00 | 125      | Comfy     |
+| 2021-03-18 13:35:00+08:00 | 125      | Comfy     |
+| 2021-03-18 15:23:00+08:00 | 125      | Comfy     |
+| 2021-03-18 15:53:00+08:00 | 125      | **Comfy**     |
+| 2021-03-18 18:58:00+08:00 | 125      | Comfy     |
+| 2021-03-19 08:05:00+08:00 | 125      | Not Comfy |
+| 2021-03-19 09:53:00+08:00 | 125      | Comfy     |
+
+### NOCB
+NOCB stands for Next Observation Carried Backward. It is a method of imputation where the next observation is carried backward to the missing values. This method is used when the missing values are assumed to be the same as the next observed value.
+
+time                      | space_id | comfort
+-------------------------|----------|---------
+2021-03-12 14:49:00+08:00|     2    | Comfy
+2021-03-17 15:30:00+08:00|     2    | Comfy
+2021-03-17 15:33:00+08:00|     2    | Comfy
+2021-03-17 15:53:00+08:00|     2    | Not Comfy
+2021-03-18 11:23:00+08:00|     2    | 
+2021-03-18 11:38:00+08:00|     2    | Comfy
+2021-03-18 12:01:00+08:00|     2    | Comfy
+2021-03-18 13:49:00+08:00|     2    | Comfy
+2021-03-18 14:22:00+08:00|     2    | Comfy
+2021-03-18 15:24:00+08:00|     2    | Comfy
+2021-03-18 15:59:00+08:00|     2    | Comfy
+
+Since we can see that rest of the values are Comfy, we can assume that the comfort level at 2021-03-18 11:23:00+08:00 is the same as the comfort level at 2021-03-18 11:38:00+08:00.
+
+```python
+df['comfort'].bfill(axis=0, inplace=True)
+```
+```python
+impyute.imputation.ts.nocb(data, axis=0)
+```
+time                      | space_id | comfort
+-------------------------|----------|---------
+2021-03-12 14:49:00+08:00|     2    | Comfy
+2021-03-17 15:30:00+08:00|     2    | Comfy
+2021-03-17 15:33:00+08:00|     2    | Comfy
+2021-03-17 15:53:00+08:00|     2    | Not Comfy
+2021-03-18 11:23:00+08:00|     2    | **Comfy**
+2021-03-18 11:38:00+08:00|     2    | Comfy
+2021-03-18 12:01:00+08:00|     2    | Comfy
+2021-03-18 13:49:00+08:00|     2    | Comfy
+2021-03-18 14:22:00+08:00|     2    | Comfy
+2021-03-18 15:24:00+08:00|     2    | Comfy
+2021-03-18 15:59:00+08:00|     2    | Comfy
