@@ -516,6 +516,6 @@ pd.merge(company_a, company_b, how='right')
 This is useful when we have a dataset that is split into multiple files. For example, if we have a dataset that is split by date, with each day's data stored in a separate CSV (e.g., `file_1.csv`, `file_2.csv`), we can use `pd.concat()` to concatenate all the data into a single DataFrame.
 
 ```python
-pd.concat([df1, df2, df3])
+pd.concat([df1, df2, df3, ...])
 ```
 **NOTE:** This will only work if the DataFrames have the same columns.
