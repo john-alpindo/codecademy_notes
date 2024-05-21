@@ -83,6 +83,8 @@ FROM social_media;
 | codecademy    | 2     | 0            |
 | codecademy    | 3     | 0            |
 
+LAST_VALUE doesn't work as expected because it returns the last value in the window, which is the same as the current row. To get the last value in the partition, you can use the `RANGE` clause with `UNBOUNDED PRECEDING` and `UNBOUNDED FOLLOWING`.
+
 ```sql
 SELECT username,
    posts,
